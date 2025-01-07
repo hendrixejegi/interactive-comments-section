@@ -1,0 +1,142 @@
+@import './sass/variables';
+
+.comment {
+  font-family: $rubik;
+  font-size: $fs-16;
+  background-color: $white;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  grid-template-areas: 
+    'vote user-info reply'
+    'vote comment comment'
+  ;
+  gap: 20px;
+  border-radius: 8px;
+  margin-block-end: 20px;
+}
+
+button {
+  background: transparent;
+  border: none;
+  outline: none;
+  font: inherit;
+  font-weight: $f-500;
+}
+
+.vote {
+  grid-area: vote;
+}
+
+.vote-control {
+  background-color: $very-light-gray;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+
+  & button {
+    color: $light-grayish-blue;
+  }
+
+  & .score {
+    font-weight: $f-500;
+    color: $moderate-blue;
+  }
+}
+
+.user {
+  grid-area: user-info;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  & img {
+    display: block;
+    max-width: 30px;
+  }
+
+  & .username {
+    color: $dark-blue;
+    font-weight: $f-700;
+  }
+
+  & .created-at {
+    color: $grayish-blue;
+  }
+}
+
+.reply-btn {
+  grid-area: reply;
+  color: $moderate-blue;
+  background: url(../images/icon-reply.svg);
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 20px;
+}
+
+.content {
+  grid-area: comment;
+  color: $grayish-blue;
+}
+
+.reply-block {
+  margin-inline-start: 40px;
+  padding-inline-start: 40px;
+  border-inline-start: 2px solid $light-grayish-blue;
+}
+
+@media screen and (max-width: 700px) {
+  .reply-block {
+    margin-inline-start: 0px;
+    padding-inline-start: 4%;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .comment {
+    font-family: $rubik;
+    font-size: $fs-16;
+    background-color: $white;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto auto, auto;
+    grid-template-areas: 
+      'user-info user-info'
+      'comment comment'
+      'vote reply'
+    ;
+    gap: 20px;
+    border-radius: 8px;
+    margin-block-end: 20px;
+  }
+
+  .vote {
+    grid-area: vote;
+    justify-self: start;
+  }
+  
+  .vote-control {
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .user {
+    grid-area: user-info;
+  }
+
+  .reply-btn {
+    grid-area: reply;
+    justify-self: end;
+    // align-self: flex-start;
+  }
+
+  .content {
+    grid-area: comment;
+  }
+}
