@@ -11,13 +11,18 @@ export default function App() {
     <main>
       {comments.map(comment => {
         const { replies } = comment;
-        const { username } = comment.user;
 
         return (
           <div key={comment.id} className="comment-block">
-            <Comment comment={comment} user='' />
+            <Comment comment={comment} setComments={setComments} user='' />
             {(replies.length > 0) && <div className="reply-block">
-              {replies.map(reply => <Comment key={reply.id} comment={reply} user={username} />)}
+              {replies.map(reply => (
+                <Comment
+                  key={reply.id}
+                  comment={reply}
+                  setComments={setComments}
+                />
+              ))}
             </div>}
           </div>
         )
