@@ -2,34 +2,52 @@ export default function Comment({comment, setComments, user}) {
   const image = comment.user.image.png;
   const { replyingTo = ''} = comment;
 
-  function addVote(event) {
-    const { commentId } = event.target.dataset;
-    setComments(prevComments => prevComments.map(comment => {
-      if (comment.id === Number(commentId)) {
-        return {
-          ...comment,
-          score: comment.score + 1,
+    function updateScoreRecursive(comment, commentId, addOne = true) {
+      function updateScore() {
+        if (comment.score > 0) {
+          return addOne ? comment.score + 1 : comment.score - 1;
         }
-      } else if (comment.replies && comment.replies.length > 0) {
-        // Check if comment has replies
-        const modReplies = comment.replies.map(reply => {
-          if (reply.id === Number(commentId)) {
-            return {
-              ...reply,
-              score: reply.score + 1,
-            }
-          } else {
-            return reply;
-          }
-        })
+
+        if (comment.score == 0) {
+          return addOne ? comment.score + 1 : comment.score;
+        }
+      }
+      if (comment.id === commentId) {
+        // If the current comment matches the target ID, update its score
         return {
           ...comment,
-          replies: modReplies
+          score: updateScore(),
+        };
+      } else if (comment.replies && comment.replies.length > 0) {
+        // If the comment has replies, recursively traverse them
+        return {
+          ...comment,
+          replies: comment.replies.map(reply =>
+            updateScoreRecursive(reply, commentId, addOne)
+          ),
         };
       } else {
-        return comment
+        // If no match and no replies, return the comment as is
+        return comment;
       }
-    }))
+    }
+
+  function addVote(event) {
+    const { commentId } = event.target.dataset;
+    setComments(prevComments =>
+      prevComments.map(comment =>
+        updateScoreRecursive(comment, Number(commentId), true)
+      )
+    )    
+  }
+
+  function removeVote(event) {
+    const { commentId } = event.target.dataset;
+    setComments(prevComments => 
+      prevComments.map(comment =>
+        updateScoreRecursive(comment, Number(commentId), false)
+      )
+    )
   }
 
   return (
@@ -39,7 +57,7 @@ export default function Comment({comment, setComments, user}) {
           <div className="vote-control">
             <button className="upvote-btn" data-comment-id={comment.id} onClick={addVote}>+</button>
             <span className='score'>{comment.score}</span>
-            <button className="downvote-btn">-</button>
+            <button className="downvote-btn" data-comment-id={comment.id} onClick={removeVote}>-</button>
           </div>
         </div>
         <div className="user">
