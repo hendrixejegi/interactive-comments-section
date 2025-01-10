@@ -1,13 +1,13 @@
 export default function Comment({comment, setComments, user}) {
   const image = comment.user.image.png;
-  const { replyingTo = ''} = comment;
 
     function updateScoreRecursive(comment, commentId, addOne = true) {
       function updateScore() {
+        // If score is greater than zero, add or remove from score
         if (comment.score > 0) {
           return addOne ? comment.score + 1 : comment.score - 1;
         }
-
+        // If score is equal to zero, only add to score
         if (comment.score == 0) {
           return addOne ? comment.score + 1 : comment.score;
         }
@@ -63,10 +63,14 @@ export default function Comment({comment, setComments, user}) {
         <div className="user">
           <img src={image} alt="" />
           <span className='username'>{comment.user.username}</span>
+          {user === comment.user.username ? <span className='current-user-comment'>you</span> : ''}
           <span className='created-at'>{comment.createdAt}</span>
         </div>
-        <button className='reply-btn'>Reply</button>
-        <p className='content'>{replyingTo && <span className="replying-to">@{replyingTo} </span>}{comment.content}</p>
+        <div className="comment-btns">
+          {user === comment.user.username ? <button className='delete-btn'>Delete</button> : ''}
+          <button className='reply-btn'>Reply</button>
+        </div>
+        <p className='content'>{comment.replyingTo && <span className="replying-to">@{comment.replyingTo} </span>}{comment.content}</p>
       </div>
     </>
   )

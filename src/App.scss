@@ -55,7 +55,6 @@ button {
   grid-area: user-info;
   display: flex;
   align-items: center;
-  gap: 20px;
 
   & img {
     display: block;
@@ -65,15 +64,39 @@ button {
   & .username {
     color: $dark-blue;
     font-weight: $f-700;
+    margin-left: 20px;
+  }
+
+  .current-user-comment {
+    font-size: 0.75rem;
+    color: $white;
+    line-height: 1;
+    background-color: $moderate-blue;
+    padding: 2px 4px;
+    border-radius: 2px;
+    margin-left: 10px;
   }
 
   & .created-at {
     color: $grayish-blue;
+    margin-left: 20px;
   }
 }
 
-.reply-btn {
+.comment-btns {
   grid-area: reply;
+}
+
+.delete-btn {
+  color: $soft-red;
+  background: url(../images/icon-delete.svg);
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 20px;
+  margin-right: 20px;
+}
+
+.reply-btn {
   color: $moderate-blue;
   background: url(../images/icon-reply.svg);
   background-position: left center;
@@ -97,10 +120,76 @@ button {
   font-weight: $f-500;
 }
 
+.create-comment {
+  background-color: $white;
+  padding: 20px;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 15px;
+  align-items: start;
+}
+
+.create-comment > * {
+  font-family: $rubik;
+  font-size: $fs-16;
+  line-height: 1.1;
+}
+
+.create-comment img {
+  max-width: 40px;
+}
+
+.create-comment textarea {
+  resize: none;
+  border-color: $light-gray;
+  border-radius: 8px;
+  outline: none;
+  padding: 10px 20px;
+}
+
+.create-comment button {
+  background-color: $moderate-blue;
+  color: $white;
+  width: 80px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+// Media Queries
+
 @media screen and (max-width: 700px) {
   .reply-block {
     margin-inline-start: 0px;
     padding-inline-start: 4%;
+  }
+
+  .create-comment {
+    background-color: $white;
+    padding: 20px;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+      'image textarea'
+      'button button'
+    ;
+    gap: 15px;
+    align-items: start;
+  }
+
+  .create-comment textarea {
+    grid-area: textarea;
+  }
+
+  .create-comment img {
+    grid-area: image;
+  }
+
+  .create-comment button {
+    grid-area: button;
+    justify-self: end;
   }
 }
 
@@ -111,7 +200,7 @@ button {
     background-color: $white;
     padding: 20px;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: auto 1fr;
     grid-template-rows: auto auto 30px;
     grid-template-areas: 
       'user-info user-info'
@@ -138,7 +227,7 @@ button {
     grid-area: user-info;
   }
 
-  .reply-btn {
+  .comment-btns {
     grid-area: reply;
     justify-self: end;
     // align-self: flex-start;
@@ -146,5 +235,32 @@ button {
 
   .content {
     grid-area: comment;
+  }
+
+  .create-comment {
+    background-color: $white;
+    padding: 20px;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas: 
+      'textarea textarea'
+      'image button'
+    ;
+    gap: 15px;
+    align-items: start;
+  }
+
+  .create-comment textarea {
+    grid-area: textarea;
+  }
+
+  .create-comment img {
+    grid-area: image;
+  }
+
+  .create-comment button {
+    grid-area: button;
   }
 }

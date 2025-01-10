@@ -14,19 +14,25 @@ export default function App() {
 
         return (
           <div key={comment.id} className="comment-block">
-            <Comment comment={comment} setComments={setComments} user='' />
+            <Comment comment={comment} setComments={setComments} user={currentUser.username}/>
             {(replies.length > 0) && <div className="reply-block">
               {replies.map(reply => (
                 <Comment
                   key={reply.id}
                   comment={reply}
                   setComments={setComments}
+                  user={currentUser.username}
                 />
               ))}
             </div>}
           </div>
         )
       })}
+      <form action="#" method='post' className="create-comment">
+        <img src={currentUser.image.png} alt="" />
+        <textarea name="comment" id="comment" rows={5} placeholder='Add a comment...'></textarea>
+        <button>Send</button>
+      </form>
     </main>
   )
 }
