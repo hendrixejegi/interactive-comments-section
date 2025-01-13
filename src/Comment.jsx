@@ -36,7 +36,7 @@ export default function Comment({comment, setComments, user}) {
     const { commentId } = event.target.dataset;
     setComments(prevComments =>
       prevComments.map(comment =>
-        updateScoreRecursive(comment, Number(commentId), true)
+        updateScoreRecursive(comment, commentId, true)
       )
     )    
   }
@@ -45,7 +45,7 @@ export default function Comment({comment, setComments, user}) {
     const { commentId } = event.target.dataset;
     setComments(prevComments => 
       prevComments.map(comment =>
-        updateScoreRecursive(comment, Number(commentId), false)
+        updateScoreRecursive(comment, commentId, false)
       )
     )
   }
