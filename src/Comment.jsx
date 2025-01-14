@@ -59,21 +59,15 @@ export default function Comment({comment, setComments, user}) {
   }
 
   function deleteCommentRecursive(comment, id) {
-    // If the current comment matches the id, exclude it by returning false
     if (comment.id === id) {
-      return false;
+      return false; // Delete this comment
     }
   
-    // If the comment has replies, process them recursively
-    if (comment.replies && comment.replies.length > 0) {
-      return {
-        ...comment,
-        replies: comment.replies.filter(reply => deleteCommentRecursive(reply, id))
-      };
+    if (comment.replies) {
+      comment.replies = comment.replies.filter(reply => deleteCommentRecursive(reply, id));
     }
   
-    // If no match, keep the comment
-    return comment;
+    return true; // Keep this comment
   }
 
   return (
