@@ -1,5 +1,5 @@
 export default function Comment({comment, setComments, user}) {
-  const image = comment.user.image.png;
+  const image = comment.user.image.png;  
 
     function updateScoreRecursive(comment, commentId, addOne = true) {
       function updateScore() {
@@ -50,6 +50,30 @@ export default function Comment({comment, setComments, user}) {
     )
   }
 
+  function deleteComment(id) {
+    setComments(prevComments => prevComments.filter(
+      comment => deleteCommentRecursive(comment, id)
+    ));
+  }
+
+  function deleteCommentRecursive(comment, id) {
+    // If the current comment matches the id, exclude it by returning false
+    if (comment.id === id) {
+      return false;
+    }
+  
+    // If the comment has replies, process them recursively
+    if (comment.replies && comment.replies.length > 0) {
+      return {
+        ...comment,
+        replies: comment.replies.filter(reply => deleteCommentRecursive(reply, id))
+      };
+    }
+  
+    // If no match, keep the comment
+    return comment;
+  }
+
   return (
     <>
       <div className="comment">
@@ -67,7 +91,7 @@ export default function Comment({comment, setComments, user}) {
           <span className='created-at'>{comment.createdAt}</span>
         </div>
         <div className="comment-btns">
-          {user === comment.user.username ? <button className='delete-btn'>Delete</button> : ''}
+          {user === comment.user.username ? <button className='delete-btn' onClick={() => deleteComment(comment.id)}>Delete</button> : ''}
           <button className='reply-btn'>Reply</button>
         </div>
         <p className='content'>{comment.replyingTo && <span className="replying-to">@{comment.replyingTo} </span>}{comment.content}</p>

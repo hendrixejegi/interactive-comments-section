@@ -1,7 +1,7 @@
 import './App.scss';
 import Comment from './Comment'
 import data from '../data.json'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function App() {
   const { currentUser, comments: commentsData } = data;
@@ -26,6 +26,10 @@ export default function App() {
   const [comments, setComments] = useState(commentsData.map(
     comment => updateIDRecursive(comment)
   ))
+
+  useEffect(() => {
+    console.log("Updated comments:", comments);
+  }, [comments]);
 
   //Helper functions
   function generateUniqueId() {
