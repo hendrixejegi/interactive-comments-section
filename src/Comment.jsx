@@ -1,3 +1,5 @@
+import { showRelativeDate } from "./utils/date";
+
 export default function Comment({comment, setComments, user}) {
   const image = comment.user.image.png;  
 
@@ -88,7 +90,7 @@ export default function Comment({comment, setComments, user}) {
           <img src={image} alt="" />
           <span className='username'>{comment.user.username}</span>
           {user === comment.user.username ? <span className='current-user-comment'>you</span> : ''}
-          <span className='created-at'>{comment.createdAt}</span>
+          <span className='created-at'>{showRelativeDate(comment.createdAt)}</span>
         </div>
         <div className="comment-btns">
           {user === comment.user.username ? <button className='delete-btn' onClick={() => deleteComment(comment.id)}>Delete</button> : ''}

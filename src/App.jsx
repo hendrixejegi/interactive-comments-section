@@ -1,7 +1,9 @@
 import './App.scss';
-import Comment from './Comment'
-import data from '../data.json'
-import { useState, useEffect } from 'react'
+import Comment from './Comment';
+import data from '../data.json';
+import { useState } from 'react';
+import { generateUniqueId } from './utils/helper';
+import { getDate } from './utils/date';
 
 export default function App() {
   const { currentUser, comments: commentsData } = data;
@@ -27,17 +29,6 @@ export default function App() {
     comment => updateIDRecursive(comment)
   ))
 
-  useEffect(() => {
-    console.log("Updated comments:", comments);
-  }, [comments]);
-
-  //Helper functions
-  function generateUniqueId() {
-    const timestamp = Date.now(); // Current timestamp in milliseconds
-    const randomNum = Math.floor(Math.random() * 1000000); // Random number between 0 and 999999
-    return `${timestamp}-${randomNum}`;
-  }
-
   function handleSubmit(event) {
     event.preventDefault();
     const formElement = event.target;
@@ -58,7 +49,7 @@ export default function App() {
         {
           "id": generateUniqueId(),
           "content": comment,
-          "createdAt": "1 month ago",
+          "createdAt": getDate(),
           "score": 0,
           "user": {...currentUser},
           "replies": []
