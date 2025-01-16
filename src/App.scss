@@ -120,7 +120,8 @@ button {
   font-weight: $f-500;
 }
 
-.create-comment {
+.create-comment,
+.create-reply {
   background-color: $white;
   padding: 20px;
   border-radius: 8px;
@@ -130,17 +131,20 @@ button {
   align-items: start;
 }
 
-.create-comment > * {
+.create-comment > *,
+.create-reply > * {
   font-family: $rubik;
   font-size: $fs-16;
   line-height: 1.1;
 }
 
-.create-comment img {
+.create-comment img,
+.create-reply img {
   max-width: 40px;
 }
 
-.create-comment textarea {
+.create-comment textarea,
+.create-reply textarea {
   resize: none;
   border-color: $light-gray;
   border-radius: 8px;
@@ -148,13 +152,16 @@ button {
   padding: 10px 20px;
 }
 
-.create-comment button {
+.create-comment button,
+.create-reply button {
   background-color: $moderate-blue;
   color: $white;
   width: 80px;
   padding: 10px;
   border-radius: 8px;
 }
+
+.create-reply { margin-block: 20px; }
 
 // Media Queries
 

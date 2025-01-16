@@ -1,8 +1,6 @@
 import { showRelativeDate } from "./utils/date";
 
-export default function Comment({comment, setComments, user}) {
-  const image = comment.user.image.png;  
-
+export default function Comment({comment, setComments, currentUser, showReplyInput}) { 
     function updateScoreRecursive(comment, commentId, addOne = true) {
       function updateScore() {
         // If score is greater than zero, add or remove from score
@@ -40,7 +38,7 @@ export default function Comment({comment, setComments, user}) {
       prevComments.map(comment =>
         updateScoreRecursive(comment, commentId, true)
       )
-    )    
+    );  
   }
 
   function removeVote(event) {
@@ -49,7 +47,7 @@ export default function Comment({comment, setComments, user}) {
       prevComments.map(comment =>
         updateScoreRecursive(comment, commentId, false)
       )
-    )
+    );
   }
 
   function deleteComment(id) {
@@ -81,14 +79,14 @@ export default function Comment({comment, setComments, user}) {
           </div>
         </div>
         <div className="user">
-          <img src={image} alt="" />
+          <img src={comment.user.image.png} alt="user" />
           <span className='username'>{comment.user.username}</span>
-          {user === comment.user.username ? <span className='current-user-comment'>you</span> : ''}
+          {currentUser.username === comment.user.username ? <span className='current-user-comment'>you</span> : ''}
           <span className='created-at'>{showRelativeDate(comment.createdAt)}</span>
         </div>
         <div className="comment-btns">
-          {user === comment.user.username ? <button className='delete-btn' onClick={() => deleteComment(comment.id)}>Delete</button> : ''}
-          <button className='reply-btn'>Reply</button>
+          {currentUser.username === comment.user.username ? <button className='delete-btn' onClick={() => deleteComment(comment.id)}>Delete</button> : ''}
+          <button className='reply-btn' onClick={showReplyInput}>Reply</button>
         </div>
         <p className='content'>{comment.replyingTo && <span className="replying-to">@{comment.replyingTo} </span>}{comment.content}</p>
       </div>

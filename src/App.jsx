@@ -8,6 +8,7 @@ import { getDate } from './utils/date';
 export default function App() {
   const { currentUser, comments: commentsData } = data;
 
+  // Load comment data and change IDs to string
   function updateIDRecursive(comment) {
     if (comment.replies && comment.replies.length > 0) {
       return {
@@ -29,6 +30,7 @@ export default function App() {
     comment => updateIDRecursive(comment)
   ))
 
+  // Add new comment to data
   function handleSubmit(event) {
     event.preventDefault();
     const formElement = event.target;
@@ -67,6 +69,37 @@ export default function App() {
     } else {return}    
   }
 
+  // Add new reply to comment
+  const [replyTo, setReplyTo] = useState(null);
+
+  function showReplyInput(commentId) {
+    setReplyTo(commentId);
+  }
+
+  function checkReplyingTo(comment) {
+    if (!replyTo) {
+      return false;
+    }
+
+    if (traverseCommentID(comment)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  function traverseCommentID(comment) {
+    if (comment.id === replyTo) {
+      return true
+    }
+
+    if (comment.replies) {
+      comment.replies.map(
+        reply => traverseCommentID(reply)
+      );
+    }
+  }
+
   return (
     <main>
       {comments.map(comment => {
@@ -74,24 +107,37 @@ export default function App() {
 
         return (
           <div key={comment.id} className="comment-block">
-            <Comment comment={comment} setComments={setComments} user={currentUser.username}/>
-            {(replies.length > 0) && <div className="reply-block">
-              {replies.map(reply => (
-                <Comment
-                  key={reply.id}
-                  comment={reply}
-                  setComments={setComments}
-                  user={currentUser.username}
-                />
-              ))}
-            </div>}
+            <Comment
+              comment={comment}
+              setComments={setComments}
+              currentUser={{...currentUser}}
+              showReplyInput={() => showReplyInput(comment.id)}
+            />
+            <div className="reply-block">
+              {(replies.length > 0) && replies.map(
+                reply => (
+                  <Comment
+                    key={reply.id}
+                    comment={reply}
+                    setComments={setComments}
+                    currentUser={{...currentUser}}
+                    showReplyInput={() => showReplyInput(reply.id)}
+                  />
+                ))
+              }
+              {checkReplyingTo(comment) && <form action="#" method='post' className="create-reply">
+                <img src={currentUser.image.png} alt="" />
+                <textarea name="comment" id="comment" rows={5} placeholder='Add a comment...'></textarea>
+                <button>REPLY</button>
+              </form>}
+            </div>
           </div>
         )
       })}
       <form action="#" onSubmit={handleSubmit} onKeyDown={handleKeyDown} method='post' className="create-comment">
         <img src={currentUser.image.png} alt="" />
         <textarea name="comment" id="comment" rows={5} placeholder='Add a comment...'></textarea>
-        <button>Send</button>
+        <button>SEND</button>
       </form>
     </main>
   )
