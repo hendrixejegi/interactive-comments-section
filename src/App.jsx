@@ -31,7 +31,7 @@ export default function App() {
   ))
 
   // Add new comment to data
-  function handleSubmit(event) {
+  function handleCommentSubmit(event) {
     event.preventDefault();
     const formElement = event.target;
     const formData = new FormData(formElement);
@@ -71,6 +71,7 @@ export default function App() {
 
   // Add new reply to comment
   const [replyTo, setReplyTo] = useState(null);
+  const [replyingTo, setReplyingTo] = useState('')
 
   function showReplyInput(commentId) {
     setReplyTo(commentId);
@@ -88,7 +89,7 @@ export default function App() {
   }
 
   function traverseCommentID(comment) {
-    if (comment.id === replyTo) {
+    if (comment.id === replyTo.id) {
       return true
     }
 
@@ -103,8 +104,14 @@ export default function App() {
 
   // Set state of reply-input when loaded to DOM
   useEffect(() => {
-    replyTo && console.log(document.getElementById('reply-input'));
+    replyTo && setReplyingTo(replyTo.user.username);
   }, [replyTo]);
+
+  function handleReplySubmit(event) {
+    event.preventDefault();
+    console.log(replyingTo)
+    console.log('bake')
+  }
 
   return (
     <main>
@@ -117,7 +124,7 @@ export default function App() {
               comment={comment}
               setComments={setComments}
               currentUser={{...currentUser}}
-              showReplyInput={() => showReplyInput(comment.id)}
+              showReplyInput={() => showReplyInput(comment)}
             />
             <div className="reply-block">
               {(replies.length > 0) && replies.map(
@@ -127,20 +134,25 @@ export default function App() {
                     comment={reply}
                     setComments={setComments}
                     currentUser={{...currentUser}}
-                    showReplyInput={() => showReplyInput(reply.id)}
+                    showReplyInput={() => showReplyInput(reply)}
                   />
                 ))
               }
-              {checkReplyingTo(comment) && <form action="#" method='post' className="create-reply">
+              {checkReplyingTo(comment) && <form action="#" method='post' className="create-reply" onSubmit={handleReplySubmit}>
                 <img src={currentUser.image.png} alt="" />
-                <textarea name="-reply-input" id="reply-input" rows={5} placeholder='Add a comment...'></textarea>
+                <textarea
+                  name="-reply-input"
+                  id="reply-input" rows={5}
+                  placeholder='Add a comment...'
+                  defaultValue={replyingTo ? `@${replyingTo}, ` : ''}
+                ></textarea>
                 <button>REPLY</button>
               </form>}
             </div>
           </div>
         )
       })}
-      <form action="#" onSubmit={handleSubmit} onKeyDown={handleKeyDown} method='post' className="create-comment">
+      <form action="#" onSubmit={handleCommentSubmit} onKeyDown={handleKeyDown} method='post' className="create-comment">
         <img src={currentUser.image.png} alt="" />
         <textarea name="comment" id="comment-input" rows={5} placeholder='Add a comment...'></textarea>
         <button>SEND</button>
