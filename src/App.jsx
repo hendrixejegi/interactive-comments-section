@@ -1,7 +1,7 @@
 import './App.scss';
 import Comment from './Comment';
 import data from '../data.json';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { generateUniqueId } from './utils/helper';
 import { getDate } from './utils/date';
 
@@ -77,15 +77,14 @@ export default function App() {
   }
 
   function checkReplyingTo(comment) {
+    let result = false;
+
     if (!replyTo) {
-      return false;
+      return result;
     }
 
-    if (traverseCommentID(comment)) {
-      return true;
-    } else {
-      return false;
-    }
+    result = traverseCommentID(comment);
+    return result;
   }
 
   function traverseCommentID(comment) {
@@ -94,11 +93,18 @@ export default function App() {
     }
 
     if (comment.replies) {
-      comment.replies.map(
-        reply => traverseCommentID(reply)
-      );
+      for (let reply of comment.replies) {
+        if (traverseCommentID(reply)) {
+          return true
+        }
+      }
     }
   }
+
+  // Set state of reply-input when loaded to DOM
+  useEffect(() => {
+    replyTo && console.log(document.getElementById('reply-input'));
+  }, [replyTo]);
 
   return (
     <main>
@@ -127,7 +133,7 @@ export default function App() {
               }
               {checkReplyingTo(comment) && <form action="#" method='post' className="create-reply">
                 <img src={currentUser.image.png} alt="" />
-                <textarea name="comment" id="comment" rows={5} placeholder='Add a comment...'></textarea>
+                <textarea name="-reply-input" id="reply-input" rows={5} placeholder='Add a comment...'></textarea>
                 <button>REPLY</button>
               </form>}
             </div>
@@ -136,7 +142,7 @@ export default function App() {
       })}
       <form action="#" onSubmit={handleSubmit} onKeyDown={handleKeyDown} method='post' className="create-comment">
         <img src={currentUser.image.png} alt="" />
-        <textarea name="comment" id="comment" rows={5} placeholder='Add a comment...'></textarea>
+        <textarea name="comment" id="comment-input" rows={5} placeholder='Add a comment...'></textarea>
         <button>SEND</button>
       </form>
     </main>
