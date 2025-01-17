@@ -36,8 +36,7 @@ export default function App() {
     const formElement = event.target;
     const formData = new FormData(formElement);
 
-    addNewComment(formData);
-    formElement.reset();
+    addNewComment(formData, formElement);
   }
 
   function addNewComment(formData, formElement) {
@@ -49,22 +48,24 @@ export default function App() {
       [
         ...prevComments,
         {
-          "id": generateUniqueId(),
-          "content": comment,
-          "createdAt": getDate(),
-          "score": 0,
-          "user": {...currentUser},
-          "replies": []
+          id: generateUniqueId(),
+          content: comment,
+          createdAt: getDate(),
+          score: 0,
+          user: {...currentUser},
+          replies: []
         },
       ]
-    ))
+    ));
+    formElement.reset();
+    formElement.blur();
   }
 
-  function handleKeyDown(event) {
+  function handleKeyDown(event, cb) {
     if (event.key === 'Enter') {
       const formElement = event.currentTarget;
       const formData = new FormData(formElement);
-      addNewComment(formData);
+      cb(formData, formElement);
       formElement.reset();
     } else {return}    
   }
@@ -73,8 +74,8 @@ export default function App() {
   const [replyTo, setReplyTo] = useState(null);
   const [replyingTo, setReplyingTo] = useState('')
 
-  function showReplyInput(commentId) {
-    setReplyTo(commentId);
+  function showReplyInput(comment) {
+    setReplyTo(comment);
   }
 
   function checkReplyingTo(comment) {
@@ -109,8 +110,55 @@ export default function App() {
 
   function handleReplySubmit(event) {
     event.preventDefault();
-    console.log(replyingTo)
-    console.log('bake')
+    const formElem = event.target;
+    const formData = new FormData(formElem);
+    addNewReply(formData, formElem);
+  }
+
+  function addNewReply(formData, formElem) {
+    const reply = formData.get('reply');
+    const replyObj = {
+      id: generateUniqueId(),
+      content: reply,
+      createdAt: getDate(),
+      score: 0,
+      replyingTo: replyingTo,
+      user: { ...currentUser }
+    }
+
+    setComments(prevComments => (
+      prevComments.map(comment => {
+        // Check if comment is a match
+        if (comment.id === replyTo.id) {
+          return {
+            ...comment,
+            replies: [
+              ...comment.replies,
+              replyObj,
+            ]
+          }
+        }
+        //Check if any of the reply is a match
+        if (comment.replies) {
+          for (let reply of comment.replies) {
+            if (reply.id === replyTo.id) {
+              return {
+                ...comment,
+                replies: [
+                  ...comment.replies,
+                  replyObj,
+                ]
+              }
+            }
+          }
+        }
+        return comment;
+      })
+    ));
+
+    formElem.reset();
+    setReplyTo(null);
+    setReplyingTo('');
   }
 
   return (
@@ -138,10 +186,10 @@ export default function App() {
                   />
                 ))
               }
-              {checkReplyingTo(comment) && <form action="#" method='post' className="create-reply" onSubmit={handleReplySubmit}>
+              {checkReplyingTo(comment) && <form action="#" method='post' className="create-reply" onSubmit={handleReplySubmit} onKeyDown={(event) => handleKeyDown(event, addNewReply)}>
                 <img src={currentUser.image.png} alt="" />
                 <textarea
-                  name="-reply-input"
+                  name="reply"
                   id="reply-input" rows={5}
                   placeholder='Add a comment...'
                   defaultValue={replyingTo ? `@${replyingTo}, ` : ''}
@@ -152,7 +200,7 @@ export default function App() {
           </div>
         )
       })}
-      <form action="#" onSubmit={handleCommentSubmit} onKeyDown={handleKeyDown} method='post' className="create-comment">
+      <form action="#" onSubmit={handleCommentSubmit} onKeyDown={(event) => handleKeyDown(event, addNewComment)} method='post' className="create-comment">
         <img src={currentUser.image.png} alt="" />
         <textarea name="comment" id="comment-input" rows={5} placeholder='Add a comment...'></textarea>
         <button>SEND</button>
