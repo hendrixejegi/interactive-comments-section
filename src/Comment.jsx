@@ -1,6 +1,7 @@
 import { showRelativeDate } from "./utils/date";
+import { useEffect } from "react";
 
-export default function Comment({comment, setComments, currentUser, showReplyInput}) { 
+export default function Comment({comment, setComments, currentUser, showReplyInput, setShowModal, showModal}) { 
     function updateScoreRecursive(comment, commentId, addOne = true) {
       function updateScore() {
         // If score is greater than zero, add or remove from score
@@ -48,10 +49,30 @@ export default function Comment({comment, setComments, currentUser, showReplyInp
     );
   }
 
-  function deleteComment(id) {
-    setComments(prevComments => prevComments.filter(
-      comment => deleteCommentRecursive(comment, id)
-    ));
+  function confirmDeleteComment() {
+    setShowModal(prev => !prev);
+    const cancelBtn = document.getElementById('cancel-btn');
+    const confirmBtn = document.getElementById('confirm-btn');
+  
+    return new Promise((resolve) => {
+      cancelBtn.addEventListener('click', () => resolve(false));
+      confirmBtn.addEventListener('click', () => resolve(true));
+    });
+  }
+
+  async function deleteComment(id) {
+    const result = await confirmDeleteComment();
+    if (result) {
+      // Proceed to delete
+      setComments(prevComments => prevComments.filter(
+        comment => deleteCommentRecursive(comment, id)
+      ));
+      setShowModal(prev => !prev)
+    } else {
+      // Cancel
+      setShowModal(prev => !prev)
+      return;
+    }
   }
 
   function deleteCommentRecursive(comment, id) {

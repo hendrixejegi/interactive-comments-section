@@ -1,0 +1,60 @@
+@import './sass/variables';
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: none;
+  padding-inline: 1rem;
+  overflow: hidden;
+}
+
+.show-md {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: $white;
+  width: 100%;
+  max-width: 350px;
+  padding: 20px;
+  font-family: $rubik;
+  border-radius: 8px;
+  
+
+  & p {
+    margin-block: 10px;
+  }
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 10px;
+
+  & > * {
+    padding: 4px;
+    border-radius: 8px;
+    height: 40px;
+    color: $white;
+  }
+}
+
+.buttons > button:first-child {
+  background-color: $grayish-blue;
+}
+.buttons > button:first-child:hover {
+  background-color: $light-grayish-blue;
+}
+
+.buttons > button:last-child {
+  background-color: $soft-red;
+}
+.buttons > button:last-child:hover {
+  background-color: $pale-red;
+}

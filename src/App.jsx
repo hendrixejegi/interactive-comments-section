@@ -4,6 +4,7 @@ import data from '../data.json';
 import { useState, useEffect } from 'react';
 import { generateUniqueId } from './utils/helper';
 import { getDate } from './utils/date';
+import DeleteModal from './DeleteModal';
 
 export default function App() {
   const { currentUser, comments: commentsData } = data;
@@ -161,50 +162,61 @@ export default function App() {
     setReplyingTo('');
   }
 
-  return (
-    <main>
-      {comments.map(comment => {
-        const { replies } = comment;
+  // Values to confirm deleteComment
+  const [showModal, setShowModal] = useState(false)
+  let cd = false; // confirm delete
 
-        return (
-          <div key={comment.id} className="comment-block">
-            <Comment
-              comment={comment}
-              setComments={setComments}
-              currentUser={{...currentUser}}
-              showReplyInput={() => showReplyInput(comment)}
-            />
-            <div className="reply-block">
-              {(replies.length > 0) && replies.map(
-                reply => (
-                  <Comment
-                    key={reply.id}
-                    comment={reply}
-                    setComments={setComments}
-                    currentUser={{...currentUser}}
-                    showReplyInput={() => showReplyInput(reply)}
-                  />
-                ))
-              }
-              {checkReplyingTo(comment) && <form action="#" method='post' className="create-reply" onSubmit={handleReplySubmit} onKeyDown={(event) => handleKeyDown(event, addNewReply)}>
-                <img src={currentUser.image.png} alt="" />
-                <textarea
-                  name="reply"
-                  id="reply-input" rows={5}
-                  placeholder='Add a comment...'
-                  defaultValue={replyingTo ? `@${replyingTo}, ` : ''}
-                ></textarea>
-                <button>REPLY</button>
-              </form>}
+  return (
+    <>
+      <main>
+        {comments.map(comment => {
+          const { replies } = comment;
+
+          return (
+            <div key={comment.id} className="comment-block">
+              <Comment
+                comment={comment}
+                setComments={setComments}
+                currentUser={{...currentUser}}
+                showReplyInput={() => showReplyInput(comment)}
+                setShowModal={setShowModal}
+                showModal={showModal}
+              />
+              <div className="reply-block">
+                {(replies.length > 0) && replies.map(
+                  reply => (
+                    <Comment
+                      key={reply.id}
+                      comment={reply}
+                      setComments={setComments}
+                      currentUser={{...currentUser}}
+                      showReplyInput={() => showReplyInput(reply)}
+                      setShowModal={setShowModal}
+                      showModal={showModal}
+                    />
+                  ))
+                }
+                {checkReplyingTo(comment) && <form action="#" method='post' className="create-reply" onSubmit={handleReplySubmit} onKeyDown={(event) => handleKeyDown(event, addNewReply)}>
+                  <img src={currentUser.image.png} alt="" />
+                  <textarea
+                    name="reply"
+                    id="reply-input" rows={5}
+                    placeholder='Add a comment...'
+                    defaultValue={replyingTo ? `@${replyingTo}, ` : ''}
+                  ></textarea>
+                  <button>REPLY</button>
+                </form>}
+              </div>
             </div>
-          </div>
-        )
-      })}
-      <form action="#" onSubmit={handleCommentSubmit} onKeyDown={(event) => handleKeyDown(event, addNewComment)} method='post' className="create-comment">
-        <img src={currentUser.image.png} alt="" />
-        <textarea name="comment" id="comment-input" rows={5} placeholder='Add a comment...'></textarea>
-        <button>SEND</button>
-      </form>
-    </main>
+          )
+        })}
+        <form action="#" onSubmit={handleCommentSubmit} onKeyDown={(event) => handleKeyDown(event, addNewComment)} method='post' className="create-comment">
+          <img src={currentUser.image.png} alt="" />
+          <textarea name="comment" id="comment-input" rows={5} placeholder='Add a comment...'></textarea>
+          <button>SEND</button>
+        </form>
+      </main>
+      <DeleteModal showModal={showModal} />
+    </>
   )
 }

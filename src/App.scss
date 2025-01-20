@@ -1,5 +1,11 @@
 @import './sass/variables';
 
+main {
+  width: 100%;
+  max-width: 700px;
+  margin-inline: auto;
+}
+
 .comment {
   font-family: $rubik;
   font-size: $fs-16;

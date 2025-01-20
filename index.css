@@ -9,10 +9,14 @@ html, body {
 }
 
 body {
-  padding: 2rem 1rem;
   background-color: hsl(228, 33%, 97%);
 }
 
 p, h1, h2, h3, h4, h5, h6 {
   overflow-wrap: break-word;
+}
+
+#root {
+  width: 100%;
+  padding: 2rem 1rem;
 }
