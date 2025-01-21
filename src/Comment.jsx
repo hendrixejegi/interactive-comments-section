@@ -1,36 +1,36 @@
 import { showRelativeDate } from "./utils/date";
 
 export default function Comment({comment, setComments, currentUser, showReplyInput, setShowModal, editComment, setEditComment}) { 
-    function updateScoreRecursive(comment, commentId, addOne = true) {
-      function updateScore() {
-        // If score is greater than zero, add or remove from score
-        if (comment.score > 0) {
-          return addOne ? comment.score + 1 : comment.score - 1;
-        }
-        // If score is equal to zero, only add to score
-        if (comment.score == 0) {
-          return addOne ? comment.score + 1 : comment.score;
-        }
+  function updateScoreRecursive(comment, commentId, addOne = true) {
+    function updateScore() {
+      // If score is greater than zero, add or remove from score
+      if (comment.score > 0) {
+        return addOne ? comment.score + 1 : comment.score - 1;
       }
-      if (comment.id === commentId) {
-        // If the current comment matches the target ID, update its score
-        return {
-          ...comment,
-          score: updateScore(),
-        };
-      } else if (comment.replies && comment.replies.length > 0) {
-        // If the comment has replies, recursively traverse them
-        return {
-          ...comment,
-          replies: comment.replies.map(reply =>
-            updateScoreRecursive(reply, commentId, addOne)
-          ),
-        };
-      } else {
-        // If no match and no replies, return the comment as is
-        return comment;
+      // If score is equal to zero, only add to score
+      if (comment.score == 0) {
+        return addOne ? comment.score + 1 : comment.score;
       }
     }
+    if (comment.id === commentId) {
+      // If the current comment matches the target ID, update its score
+      return {
+        ...comment,
+        score: updateScore(),
+      };
+    } else if (comment.replies && comment.replies.length > 0) {
+      // If the comment has replies, recursively traverse them
+      return {
+        ...comment,
+        replies: comment.replies.map(reply =>
+          updateScoreRecursive(reply, commentId, addOne)
+        ),
+      };
+    } else {
+      // If no match and no replies, return the comment as is
+      return comment;
+    }
+  }
 
   function addVote(commentId) {
     setComments(prevComments =>
@@ -153,10 +153,10 @@ export default function Comment({comment, setComments, currentUser, showReplyInp
           }
         </div>
         {editComment && editComment.id === comment.id
-          ? <>
+          ? <div className="update-input-wrapper">
             <textarea name="updated-comment" id="update-comment-input" rows={6} defaultValue={comment.content} onChange={updateComment}></textarea>
             <button className="update-btn" onClick={updateCommentData}>UPDATE</button>
-          </>
+          </div>
           : <p className='content'>{comment.replyingTo && <span className="replying-to">@{comment.replyingTo} </span>}{comment.content}</p>
         }
       </div>

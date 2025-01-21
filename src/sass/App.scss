@@ -134,19 +134,24 @@ button {
   color: $grayish-blue;
 }
 
-#update-comment-input {
+.update-input-wrapper {
   grid-area: comment;
-  resize: none;
-  border-color: $light-gray;
-  border-radius: 8px;
-  padding: 10px 20px;
-  cursor: pointer;
-  outline: none;
-  font: inherit;
-}
 
-#update-comment-input:focus {
-  border-color: $moderate-blue;
+  & > textarea {
+    width: 100%;
+    margin-bottom: 10px;
+    resize: none;
+    border-color: $light-gray;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    outline: none;
+    font: inherit;
+  }
+
+  & > textarea:focus {
+    border-color: $moderate-blue;
+  }
 }
 
 .update-btn {
@@ -254,10 +259,6 @@ button {
   .create-comment button {
     grid-area: button;
     justify-self: end;
-  }
-
-  #update-comment-input {
-    grid-column: 1 / -1;
   }
 }
 
