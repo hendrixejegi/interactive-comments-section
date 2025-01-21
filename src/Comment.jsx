@@ -1,7 +1,6 @@
 import { showRelativeDate } from "./utils/date";
-import { useEffect } from "react";
 
-export default function Comment({comment, setComments, currentUser, showReplyInput, setShowModal, showModal}) { 
+export default function Comment({comment, setComments, currentUser, showReplyInput, setShowModal, editComment, setEditComment}) { 
     function updateScoreRecursive(comment, commentId, addOne = true) {
       function updateScore() {
         // If score is greater than zero, add or remove from score
@@ -49,42 +48,72 @@ export default function Comment({comment, setComments, currentUser, showReplyInp
     );
   }
 
-  function confirmDeleteComment() {
-    setShowModal(prev => !prev);
-    const cancelBtn = document.getElementById('cancel-btn');
-    const confirmBtn = document.getElementById('confirm-btn');
-  
-    return new Promise((resolve) => {
-      cancelBtn.addEventListener('click', () => resolve(false));
-      confirmBtn.addEventListener('click', () => resolve(true));
-    });
-  }
-
   async function deleteComment(id) {
+    function deleteCommentRecursive(comment, id) {
+      if (comment.id === id) {
+        return false; // Delete this comment
+      }
+    
+      if (comment.replies) {
+        comment.replies = comment.replies.filter(reply => deleteCommentRecursive(reply, id));
+      }
+    
+      return true; // Keep this comment
+    }
+
+    function confirmDeleteComment() {
+      setShowModal(prev => !prev);
+      const cancelBtn = document.getElementById('cancel-btn');
+      const confirmBtn = document.getElementById('confirm-btn');
+    
+      return new Promise((resolve) => {
+        cancelBtn.addEventListener('click', () => resolve(false));
+        confirmBtn.addEventListener('click', () => resolve(true));
+      });
+    }
+
     const result = await confirmDeleteComment();
     if (result) {
-      // Proceed to delete
       setComments(prevComments => prevComments.filter(
         comment => deleteCommentRecursive(comment, id)
       ));
       setShowModal(prev => !prev)
     } else {
-      // Cancel
       setShowModal(prev => !prev)
       return;
     }
   }
 
-  function deleteCommentRecursive(comment, id) {
-    if (comment.id === id) {
-      return false; // Delete this comment
+  // Handle comment edit
+  function handleEditComment(comment) {
+    setEditComment(comment);
+  }
+
+  function updateComment(event) {
+    setEditComment(prev => (
+      {...prev, content: event.target.value}
+    ));
+  }
+
+  function updateCommentData() {
+    function updateRecursive(comment) {
+      if (editComment.id === comment.id) {
+        return {
+          ...comment,
+          content: editComment.content,
+        };
+      } else if (comment.replies) {
+        return {
+          ...comment,
+          replies: comment.replies.map(reply => updateRecursive(reply)),
+        };
+      } else {
+        return comment;
+      }
     }
   
-    if (comment.replies) {
-      comment.replies = comment.replies.filter(reply => deleteCommentRecursive(reply, id));
-    }
-  
-    return true; // Keep this comment
+    setComments(prev => prev.map(comment => updateRecursive(comment)));
+    setEditComment(null);
   }
 
   return (
@@ -114,12 +143,22 @@ export default function Comment({comment, setComments, currentUser, showReplyInp
               Delete</button>
             : ''
           }
-          <button className='reply-btn' onClick={showReplyInput}>
-            <svg width="14" height="13" xmlns="http://www.w3.org/2000/svg"><path d="M.227 4.316 5.04.16a.657.657 0 0 1 1.085.497v2.189c4.392.05 7.875.93 7.875 5.093 0 1.68-1.082 3.344-2.279 4.214-.373.272-.905-.07-.767-.51 1.24-3.964-.588-5.017-4.829-5.078v2.404c0 .566-.664.86-1.085.496L.227 5.31a.657.657 0 0 1 0-.993Z" fill="currentcolor"/></svg>
-            Reply
-          </button>
+          {currentUser.username === comment.user.username
+            ? <button className="edit-btn" onClick={() => handleEditComment(comment)}>
+              <svg width="14" height="14" xmlns="http://www.w3.org/2000/svg"><path d="M13.479 2.872 11.08.474a1.75 1.75 0 0 0-2.327-.06L.879 8.287a1.75 1.75 0 0 0-.5 1.06l-.375 3.648a.875.875 0 0 0 .875.954h.078l3.65-.333c.399-.04.773-.216 1.058-.499l7.875-7.875a1.68 1.68 0 0 0-.061-2.371Zm-2.975 2.923L8.159 3.449 9.865 1.7l2.389 2.39-1.75 1.706Z" fill="currentcolor"/></svg>
+              Edit</button>
+            : <button className='reply-btn' onClick={showReplyInput}>
+              <svg width="14" height="13" xmlns="http://www.w3.org/2000/svg"><path d="M.227 4.316 5.04.16a.657.657 0 0 1 1.085.497v2.189c4.392.05 7.875.93 7.875 5.093 0 1.68-1.082 3.344-2.279 4.214-.373.272-.905-.07-.767-.51 1.24-3.964-.588-5.017-4.829-5.078v2.404c0 .566-.664.86-1.085.496L.227 5.31a.657.657 0 0 1 0-.993Z" fill="currentcolor"/></svg>
+              Reply</button>
+          }
         </div>
-        <p className='content'>{comment.replyingTo && <span className="replying-to">@{comment.replyingTo} </span>}{comment.content}</p>
+        {editComment && editComment.id === comment.id
+          ? <>
+            <textarea name="updated-comment" id="update-comment-input" rows={6} defaultValue={comment.content} onChange={updateComment}></textarea>
+            <button className="update-btn" onClick={updateCommentData}>UPDATE</button>
+          </>
+          : <p className='content'>{comment.replyingTo && <span className="replying-to">@{comment.replyingTo} </span>}{comment.content}</p>
+        }
       </div>
     </>
   )

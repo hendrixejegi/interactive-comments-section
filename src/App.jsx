@@ -1,4 +1,4 @@
-import './App.scss';
+import './sass/App.scss';
 import Comment from './Comment';
 import data from '../data.json';
 import { useState, useEffect } from 'react';
@@ -7,9 +7,12 @@ import { getDate } from './utils/date';
 import DeleteModal from './DeleteModal';
 
 export default function App() {
-  const { currentUser, comments: commentsData } = data;
-
   // Load comment data and change IDs to string
+  const { currentUser, comments: commentsData } = data;
+  const [comments, setComments] = useState(commentsData.map(
+    comment => updateIDRecursive(comment)
+  ))
+
   function updateIDRecursive(comment) {
     if (comment.replies && comment.replies.length > 0) {
       return {
@@ -26,10 +29,6 @@ export default function App() {
       }
     }
   }
-
-  const [comments, setComments] = useState(commentsData.map(
-    comment => updateIDRecursive(comment)
-  ))
 
   // Add new comment to data
   function handleCommentSubmit(event) {
@@ -80,6 +79,20 @@ export default function App() {
   }
 
   function checkReplyingTo(comment) {
+    function traverseCommentID(comment) {
+      if (comment.id === replyTo.id) {
+        return true
+      }
+  
+      if (comment.replies) {
+        for (let reply of comment.replies) {
+          if (traverseCommentID(reply)) {
+            return true
+          }
+        }
+      }
+    }
+    
     let result = false;
 
     if (!replyTo) {
@@ -90,21 +103,6 @@ export default function App() {
     return result;
   }
 
-  function traverseCommentID(comment) {
-    if (comment.id === replyTo.id) {
-      return true
-    }
-
-    if (comment.replies) {
-      for (let reply of comment.replies) {
-        if (traverseCommentID(reply)) {
-          return true
-        }
-      }
-    }
-  }
-
-  // Set state of reply-input when loaded to DOM
   useEffect(() => {
     replyTo && setReplyingTo(replyTo.user.username);
   }, [replyTo]);
@@ -162,9 +160,8 @@ export default function App() {
     setReplyingTo('');
   }
 
-  // Values to confirm deleteComment
   const [showModal, setShowModal] = useState(false)
-  let cd = false; // confirm delete
+  const [editComment, setEditComment] = useState(null);
 
   return (
     <>
@@ -181,6 +178,8 @@ export default function App() {
                 showReplyInput={() => showReplyInput(comment)}
                 setShowModal={setShowModal}
                 showModal={showModal}
+                editComment={editComment}
+                setEditComment={setEditComment}
               />
               <div className="reply-block">
                 {(replies.length > 0) && replies.map(
@@ -192,7 +191,8 @@ export default function App() {
                       currentUser={{...currentUser}}
                       showReplyInput={() => showReplyInput(reply)}
                       setShowModal={setShowModal}
-                      showModal={showModal}
+                      editComment={editComment}
+                      setEditComment={setEditComment}
                     />
                   ))
                 }

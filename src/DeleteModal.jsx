@@ -1,4 +1,4 @@
-import './DeleteModal.scss'
+import './sass/DeleteModal.scss'
 
 export default function DeleteModal({ showModal }) {
     return (

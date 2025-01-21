@@ -1,4 +1,4 @@
-@import './sass/variables';
+@import './variables';
 
 main {
   width: 100%;
@@ -115,7 +115,8 @@ button {
   color: $pale-red;
 }
 
-.reply-btn {
+.reply-btn,
+.edit-btn {
   color: $moderate-blue;
 
   & svg {
@@ -123,13 +124,34 @@ button {
   }
 }
 
-.reply-btn:hover {
+.reply-btn:hover,
+.edit-btn:hover {
   color: $light-grayish-blue;
 }
 
 .content {
   grid-area: comment;
   color: $grayish-blue;
+}
+
+#update-comment-input {
+  grid-area: comment;
+  resize: none;
+  border-color: $light-gray;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  outline: none;
+  font: inherit;
+}
+
+#update-comment-input:focus {
+  border-color: $moderate-blue;
+}
+
+.update-btn {
+  grid-column: 3 / 4;
+  justify-self: flex-end;
 }
 
 .reply-block {
@@ -182,7 +204,8 @@ button {
 }
 
 .create-comment button,
-.create-reply button {
+.create-reply button,
+.update-btn {
   background-color: $moderate-blue;
   color: $white;
   width: 80px;
@@ -231,6 +254,10 @@ button {
   .create-comment button {
     grid-area: button;
     justify-self: end;
+  }
+
+  #update-comment-input {
+    grid-column: 1 / -1;
   }
 }
 
