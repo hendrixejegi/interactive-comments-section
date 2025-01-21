@@ -6,12 +6,22 @@ import { generateUniqueId } from './utils/helper';
 import { getDate } from './utils/date';
 import DeleteModal from './DeleteModal';
 
+const { currentUser, comments: commentsData } = data;
+
 export default function App() {
   // Load comment data and change IDs to string
-  const { currentUser, comments: commentsData } = data;
-  const [comments, setComments] = useState(commentsData.map(
-    comment => updateIDRecursive(comment)
-  ))
+  const [comments, setComments] = useState(() => {
+    const savedComments = localStorage.getItem('comments');
+    return savedComments
+      ? JSON.parse(savedComments)
+      : commentsData.map(
+        comment => updateIDRecursive(comment)
+      )
+  })
+
+  useEffect(() => {
+    localStorage.setItem('comments', JSON.stringify(comments))
+  }, [comments]);
 
   function updateIDRecursive(comment) {
     if (comment.replies && comment.replies.length > 0) {
