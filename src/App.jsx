@@ -120,7 +120,7 @@ export default function App() {
     const reply = formData.get('reply');
     const replyObj = {
       id: generateUniqueId(),
-      content: reply,
+      content: reply.replace(`@${replyingTo}`, '').trim(),
       createdAt: getDate(),
       score: 0,
       replyingTo: replyingTo,
@@ -202,7 +202,7 @@ export default function App() {
                     name="reply"
                     id="reply-input" rows={5}
                     placeholder='Add a comment...'
-                    defaultValue={replyingTo ? `@${replyingTo}, ` : ''}
+                    defaultValue={replyingTo ? `@${replyingTo} ` : ''}
                   ></textarea>
                   <button>REPLY</button>
                 </form>}
